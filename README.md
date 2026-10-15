@@ -123,7 +123,8 @@ recommendation, which breaks no rule, so warnings never fail the build.
 ## How it decides
 
 - A `202` from the API means the run is still going. The Action keeps polling until the run
-  reaches a terminal status, up to `timeout_minutes`.
+  reaches a terminal status, up to `timeout_minutes`. A poll that starts just before the deadline
+  can finish up to about 7 seconds after it.
 - On a `429` it waits as long as `Retry-After` says, between 1 and 120 seconds (5 when the header
   is missing), for up to 3 retries per request, and never past `timeout_minutes`.
 - A run that ended without being graded, a run that graded zero checks, and a run that stopped
