@@ -14,9 +14,9 @@
 ---
 
 This Action runs a [ChargerDojo](https://chargerdojo.com) conformance suite against an OCPI
-endpoint you have registered, waits for the verdict, and turns it into an exit code. CPOs, eMSPs and
-roaming hubs use it to catch a broken OCPI rule in the pull request that introduced it, before a
-roaming partner finds it in production.
+endpoint you have registered, waits for the verdict, and turns it into an exit code. It is built
+for CPOs, eMSPs and roaming hubs that want to catch a broken OCPI rule in the pull request that
+introduced it, before a roaming partner finds it in production.
 
 The suites run on ChargerDojo's servers. The Action starts a run, polls it to the end, prints the
 result with a link to the full per-check report, and publishes the counts as step outputs. It has
