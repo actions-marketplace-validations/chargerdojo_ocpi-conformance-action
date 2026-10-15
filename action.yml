@@ -1,0 +1,54 @@
+name: 'ChargerDojo OCPI conformance'
+description: 'Run an OCPI conformance suite against a registered ChargerDojo connection and gate the build on the verdict.'
+author: 'ChargerDojo'
+branding:
+  icon: 'check-circle'
+  color: 'green'
+
+inputs:
+  api_key:
+    description: 'A cdojo_ API key. Pass it from a secret, never as a literal.'
+    required: true
+  connection_id:
+    description: 'The registered connection to run against. GET /api/v1/connections lists yours.'
+    required: true
+  module:
+    description: 'One protocol module or scenario to run. Omit it to run every advertised suite your plan covers.'
+    required: false
+    default: ''
+  seed:
+    description: 'Reuse a seed to send the same requests again, down to the object ids. 1 to 128 characters.'
+    required: false
+    default: ''
+  base_url:
+    description: 'The ChargerDojo origin to call.'
+    required: false
+    default: 'https://chargerdojo.com'
+  wait:
+    description: 'Seconds each request holds the connection open waiting for the run. The API clamps this to 55.'
+    required: false
+    default: '55'
+  timeout_minutes:
+    description: 'How long to keep polling before giving up and exiting 2.'
+    required: false
+    default: '20'
+
+outputs:
+  report_id:
+    description: 'The report this run produced.'
+  status:
+    description: 'The terminal run status: completed, failed, cancelled or interrupted.'
+  passed:
+    description: 'Checks that passed. Empty when the run was never graded.'
+  failed:
+    description: 'Checks that failed. Empty when the run was never graded.'
+  report_url:
+    description: 'Where to read the full per-check report.'
+
+# A JavaScript action rather than composite, so the key reaches the script as an environment variable
+# and never passes through a shell command line. node24 because hosted runners no longer ship Node 20.
+# Every output is written before the script exits, so a step with `continue-on-error: true` can still
+# read them on a failing run.
+runs:
+  using: 'node24'
+  main: 'run-conformance.js'

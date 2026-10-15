@@ -1,0 +1,6 @@
+{
+  "name": "chargerdojo-action",
+  "private": true,
+  "type": "commonjs",
+  "description": "Pins CommonJS for the Action's entry point. It has no dependencies, so there is nothing to install."
+}

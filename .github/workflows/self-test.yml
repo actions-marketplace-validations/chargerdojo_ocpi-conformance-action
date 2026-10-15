@@ -1,0 +1,81 @@
+name: Self-test
+
+# Runs the Action on a real runner against a local stand-in for the ChargerDojo API, so every change
+# proves that the runner starts it, hands it its inputs and reads its outputs, on a passing run and
+# on a failing one. No API key: `cdojo_smoke` is the stand-in's own expected value.
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+
+      - name: Start the stand-in API
+        run: |
+          node .github/smoke-api.mjs --port=8791 --verdict=pass &
+          node .github/smoke-api.mjs --port=8792 --verdict=fail &
+          for port in 8791 8792; do
+            for _ in $(seq 1 40); do
+              curl -s -o /dev/null "http://127.0.0.1:$port/api/v1/testing/runs" && break
+              sleep 0.25
+            done
+          done
+
+      - name: A compliant run
+        id: pass
+        uses: ./
+        with:
+          api_key: cdojo_smoke
+          connection_id: smoke-connection
+          base_url: http://127.0.0.1:8791
+          wait: '1'
+          timeout_minutes: '1'
+
+      - name: The compliant run published its outputs
+        env:
+          STATUS: ${{ steps.pass.outputs.status }}
+          PASSED: ${{ steps.pass.outputs.passed }}
+          FAILED: ${{ steps.pass.outputs.failed }}
+          REPORT_ID: ${{ steps.pass.outputs.report_id }}
+          REPORT_URL: ${{ steps.pass.outputs.report_url }}
+        run: |
+          set -eu
+          test "$STATUS" = "completed"
+          test "$PASSED" = "5"
+          test "$FAILED" = "0"
+          test "$REPORT_ID" = "smoke-report"
+          test "$REPORT_URL" = "http://127.0.0.1:8791/ocpi-testing-tool/runs?run=smoke-report"
+
+      # `continue-on-error` so the step's failure is the assertion rather than the end of the job.
+      - name: A run with failed checks
+        id: fail
+        continue-on-error: true
+        uses: ./
+        with:
+          api_key: cdojo_smoke
+          connection_id: smoke-connection
+          base_url: http://127.0.0.1:8792
+          wait: '1'
+          timeout_minutes: '1'
+
+      - name: The failing run failed the step and still published its counters
+        env:
+          OUTCOME: ${{ steps.fail.outcome }}
+          FAILED: ${{ steps.fail.outputs.failed }}
+          STATUS: ${{ steps.fail.outputs.status }}
+        run: |
+          set -eu
+          test "$OUTCOME" = "failure"
+          test "$STATUS" = "completed"
+          test "$FAILED" = "2"
