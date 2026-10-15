@@ -37,7 +37,7 @@ outputs:
   report_id:
     description: 'The report this run produced.'
   status:
-    description: 'The terminal run status: completed, failed, cancelled or interrupted.'
+    description: 'The last run status seen: completed, failed, cancelled or interrupted once the run ended, or the in-flight or unknown status the Action gave up on with exit 2. Empty when no run started.'
   passed:
     description: 'Checks that passed. Empty when the run was never graded.'
   failed:
