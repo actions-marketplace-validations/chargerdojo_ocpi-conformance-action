@@ -104,9 +104,9 @@ Every output is written before the step exits, so a later step can read them on 
 | --- | --- |
 | `report_id` | The report this run produced. |
 | `report_url` | Where to read the full per-check report. |
-| `status` | The last run status the Action saw. Once the run ended: `completed`, `failed`, `cancelled` or `interrupted`. On exit 2 it can also be an in-flight status such as `running`, when `timeout_minutes` ran out, or a status this release does not know. Empty when no run started. |
-| `passed` | Checks that passed. Empty when the run was never graded. |
-| `failed` | Checks that failed. Empty when the run was never graded. |
+| `status` | The last run status the Action saw. Once the run ended: `completed`, `failed`, `cancelled` or `interrupted`. On exit 2 it can also be an in-flight status such as `running`, when `timeout_minutes` ran out, or a status this release does not know. Empty when the start call or a later poll failed. |
+| `passed` | Checks that passed. Empty when the Action saw no graded result. |
+| `failed` | Checks that failed. Empty when the Action saw no graded result. |
 
 ## Exit codes
 

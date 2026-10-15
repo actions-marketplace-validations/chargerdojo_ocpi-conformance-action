@@ -37,11 +37,11 @@ outputs:
   report_id:
     description: 'The report this run produced.'
   status:
-    description: 'The last run status seen: completed, failed, cancelled or interrupted once the run ended, or the in-flight or unknown status the Action gave up on with exit 2. Empty when no run started.'
+    description: 'The last run status seen: completed, failed, cancelled or interrupted once the run ended, or the in-flight or unknown status the Action gave up on with exit 2. Empty when the start call or a later poll failed.'
   passed:
-    description: 'Checks that passed. Empty when the run was never graded.'
+    description: 'Checks that passed. Empty when the Action saw no graded result.'
   failed:
-    description: 'Checks that failed. Empty when the run was never graded.'
+    description: 'Checks that failed. Empty when the Action saw no graded result.'
   report_url:
     description: 'Where to read the full per-check report.'
 
