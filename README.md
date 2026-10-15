@@ -45,8 +45,15 @@ on:
   pull_request:
   workflow_dispatch:
 
+permissions: {}
+
 jobs:
   conformance:
+    # Pull requests from forks and Dependabot get no repository secrets, so the key would be empty.
+    if: >-
+      github.event_name != 'pull_request' ||
+      (github.event.pull_request.head.repo.full_name == github.repository &&
+      github.actor != 'dependabot[bot]')
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
@@ -56,8 +63,10 @@ jobs:
           connection_id: ${{ vars.CHARGERDOJO_CONNECTION_ID }}
 ```
 
-The Action needs no checkout and no token permissions. `@v1` follows every compatible release. To
-pin an exact version, use `@v1.0.0` or the commit SHA of a release.
+The Action needs no checkout and no token permissions, so `permissions: {}` gives the job's
+`GITHUB_TOKEN` none. GitHub withholds secrets from pull requests opened from forks and by
+Dependabot, which is why the job skips them rather than failing with no key. `@v1` follows every
+compatible release. To pin an exact version, use `@v1.0.0` or the commit SHA of a release.
 
 ### Run one module or scenario
 
