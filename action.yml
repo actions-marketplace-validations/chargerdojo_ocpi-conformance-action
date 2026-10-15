@@ -29,7 +29,7 @@ inputs:
     required: false
     default: '55'
   timeout_minutes:
-    description: 'How long to keep polling before giving up and exiting 2.'
+    description: 'How long to keep polling before giving up and exiting 2. Rate-limit waits count against it, and no single wait is longer than 120 seconds.'
     required: false
     default: '20'
 
@@ -37,7 +37,7 @@ outputs:
   report_id:
     description: 'The report this run produced.'
   status:
-    description: 'The last run status seen: completed, failed, cancelled or interrupted once the run ended, or the in-flight or unknown status the Action gave up on with exit 2. Empty when the start call or a later poll failed.'
+    description: 'The last run status seen: completed, failed, cancelled or interrupted once the run ended, or the in-flight or unknown status the Action gave up on with exit 2. Empty when the Action stopped before it read a run status (an invalid input, or a start call that failed or named no report) or when a later poll failed.'
   passed:
     description: 'Checks that passed. Empty when the Action saw no graded result.'
   failed:

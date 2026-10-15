@@ -96,7 +96,7 @@ Every output is written before the step exits, so a later step can read them on 
 | `seed` | No | a new one | Reuse a seed to send the same requests again, down to the object ids. 1 to 128 characters. |
 | `base_url` | No | `https://chargerdojo.com` | The ChargerDojo origin to call. |
 | `wait` | No | `55` | Seconds each request holds the connection open waiting for the run. The API caps it at 55. |
-| `timeout_minutes` | No | `20` | How long to keep polling before giving up and exiting 2. |
+| `timeout_minutes` | No | `20` | How long to keep polling before giving up and exiting 2. Rate-limit waits count against it, and no single wait is longer than 120 seconds. |
 
 ## Outputs
 
@@ -104,7 +104,7 @@ Every output is written before the step exits, so a later step can read them on 
 | --- | --- |
 | `report_id` | The report this run produced. |
 | `report_url` | Where to read the full per-check report. |
-| `status` | The last run status the Action saw. Once the run ended: `completed`, `failed`, `cancelled` or `interrupted`. On exit 2 it can also be an in-flight status such as `running`, when `timeout_minutes` ran out, or a status this release does not know. Empty when the start call or a later poll failed. |
+| `status` | The last run status the Action saw. Once the run ended: `completed`, `failed`, `cancelled` or `interrupted`. On exit 2 it can also be an in-flight status such as `running`, when `timeout_minutes` ran out, or a status this release does not know. Empty when the Action stopped before it read a run status (an invalid input, or a start call that failed or named no report) or when a later poll failed. |
 | `passed` | Checks that passed. Empty when the Action saw no graded result. |
 | `failed` | Checks that failed. Empty when the Action saw no graded result. |
 
@@ -124,7 +124,8 @@ recommendation, which breaks no rule, so warnings never fail the build.
 
 - A `202` from the API means the run is still going. The Action keeps polling until the run
   reaches a terminal status, up to `timeout_minutes`.
-- On a `429` it waits as long as `Retry-After` says, with a floor and a bounded number of retries.
+- On a `429` it waits as long as `Retry-After` says, between 1 and 120 seconds (5 when the header
+  is missing), for up to 3 retries per request, and never past `timeout_minutes`.
 - A run that ended without being graded, a run that graded zero checks, and a run that stopped
   early with nothing failing yet all exit 2. Nothing failing is true of a run that asked nothing.
 - A pass discloses its scope. Modules your plan does not cover, and checks the response gave
