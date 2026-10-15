@@ -66,7 +66,7 @@ jobs:
 The Action needs no checkout and no token permissions, so `permissions: {}` gives the job's
 `GITHUB_TOKEN` none. GitHub withholds secrets from pull requests opened from forks and by
 Dependabot, which is why the job skips them rather than failing with no key. `@v1` follows every
-compatible release. To pin an exact version, use `@v1.0.0` or the commit SHA of a release.
+compatible release. To pin an exact version, use a release tag from the Releases page or its commit SHA.
 
 ### Run one module or scenario
 
