@@ -10,8 +10,9 @@ Say which release you ran, what you saw, and how to reproduce it.
 
 ## Supported versions
 
-Fixes ship in a new release and move the major tag, so `@v1` always carries them. A pinned
-`@v1.x.y` or commit SHA does not change: move it to the latest release to pick up a fix.
+Fixes ship in a new release of the newest major version and move its major tag, so `@v1` carries
+them while v1 is the newest major. An older major receives no fixes once a newer one exists. A
+pinned `@v1.x.y` or commit SHA does not change: move it to the latest release to pick up a fix.
 
 ## Scope
 
